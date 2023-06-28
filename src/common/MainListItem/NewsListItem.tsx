@@ -56,17 +56,11 @@ function NewsListItem({item, PinPost, DeletePinPost}: NewsListItemObj) {
           styles.Container,
           {
             padding: item.isFavorite ? 5 : 0,
-            shadowColor: 'black',
-            shadowOffset: {width: 0, height: 2},
-            shadowOpacity: 0.5,
-            shadowRadius: 2,
             elevation: item.isFavorite ? 5 : 0,
-            backgroundColor: 'white',
           },
         ]}>
         <FastImage
-          source={{uri: item?.urlToImage,priority: FastImage.priority.high,}}
-          
+          source={{uri: item?.urlToImage, priority: FastImage.priority.high}}
           style={styles.newsImg}
           resizeMode="cover"
         />
@@ -102,6 +96,11 @@ const styles = StyleSheet.create({
     marginHorizontal: 15,
     overflow: 'hidden',
     flexDirection: 'row',
+    backgroundColor: 'white',
+    shadowColor: 'black',
+    shadowOffset: {width: 0, height: 2},
+    shadowOpacity: 0.5,
+    shadowRadius: 2,
   },
   swipeContainer: {
     flexDirection: 'row',

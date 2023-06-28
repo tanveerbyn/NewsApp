@@ -41,7 +41,7 @@ export const storeData = newsDataArray => {
           '',
         ],
         (_, {insertId}) => {
-          console.log(`Data inserted with ID: ${insertId}`);
+          // console.log(`Data inserted with ID: ${insertId}`);
         },
         (_, error) => {
           console.log('Error inserting data:', error);

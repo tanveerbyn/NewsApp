@@ -1,9 +1,11 @@
+/* eslint-disable react/no-unstable-nested-components */
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, {useCallback} from 'react';
 import {
   FlatList,
   LayoutAnimation,
   Platform,
+  StyleSheet,
   UIManager,
   View,
 } from 'react-native';
@@ -17,9 +19,12 @@ import {
 import {
   removeFromArray,
   removeFromArrayUnique,
+  windowHeight,
+  windowWidth,
 } from '../commonFunctions/commonFunctions';
 import Toast from 'react-native-simple-toast';
 import {ActivityIndicator} from 'react-native';
+import NodataFoundComponent from './NoDataFound';
 if (Platform.OS === 'android') {
   if (UIManager.setLayoutAnimationEnabledExperimental) {
     UIManager.setLayoutAnimationEnabledExperimental(true);
@@ -33,6 +38,7 @@ function MainListComponent({
   setfavoriteList,
   favoriteList,
   isWaiting,
+  callApi,
 }: any) {
   const PinPost = (rowData: NewsListItemObj) => {
     // alert(1);
@@ -86,7 +92,6 @@ function MainListComponent({
     [NewsList, favoriteList],
   );
   const keyExtractor = useCallback((item: NewsObj) => item.id + '_', []);
-
   return (
     <View style={{flex: 1}}>
       <FlatList
@@ -96,13 +101,36 @@ function MainListComponent({
         // decelerationRate={'fast'}
         disableVirtualization={false}
         keyExtractor={keyExtractor}
-        ListFooterComponent={() =>
-          isWaiting ? (
-            <ActivityIndicator color={'black'} style={{margin: 10}} />
-          ) : null
-        }
+        ListFooterComponent={() => (
+          <View>
+            {!isWaiting && NewsList.length === 0 ? (
+              <View style={styles.emptyView}>
+                {!isWaiting && NewsList.length === 0 && (
+                  <NodataFoundComponent
+                    retry={() => {
+                      callApi();
+                    }}
+                  />
+                )}
+              </View>
+            ) : null}
+            {isWaiting ? (
+              <View style={styles.emptyView}>
+                <ActivityIndicator color={'black'} />
+              </View>
+            ) : null}
+          </View>
+        )}
       />
     </View>
   );
 }
+const styles = StyleSheet.create({
+  emptyView: {
+    height: windowHeight / 1.3,
+    width: windowWidth,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+});
 export default MainListComponent;

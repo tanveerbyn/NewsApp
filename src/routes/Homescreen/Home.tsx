@@ -1,6 +1,5 @@
 import React, {useContext, useEffect, useState} from 'react';
 import {
-  ActivityIndicator,
   Alert,
   LayoutAnimation,
   Platform,
@@ -8,6 +7,7 @@ import {
   UIManager,
   View,
 } from 'react-native';
+import Toast from 'react-native-simple-toast';
 import AppHeader from '../../common/Headers/AppHeader';
 import axios from 'axios';
 import ListHeader from '../../common/Headers/ListHeader';
@@ -23,6 +23,7 @@ import {
 import NetworkContext from '../../common/commonFunctions/NetworkContext';
 import MainListComponent from '../../common/Components/MainListComponent';
 import NewsSlider from '../../common/NewsSlider';
+import NodataFoundComponent from '../../common/Components/NoDataFound';
 
 if (Platform.OS === 'android') {
   if (UIManager.setLayoutAnimationEnabledExperimental) {
@@ -69,7 +70,7 @@ function Home({route}) {
     DataCheck();
     getAllDataFromTable()
       .then(data => {
-        console.log('Retrieved data:', data);
+        console.log('Retrieved data:', data?.length);
         // Do something with the retrieved data
       })
       .catch(error => {
@@ -102,7 +103,6 @@ function Home({route}) {
           ]);
           setTimeLeft(10);
           setisInitial(false);
-         
         },
         previousRecordIds,
         setpreviousRecordIds,
@@ -121,7 +121,7 @@ function Home({route}) {
   }, [timeLeft, isStarted, favoriteList, isConnected]);
 
   function filterIds() {
-    setNewsList([...favoriteList]);
+    // setNewsList([...favoriteList]);
     var ids = [];
     for (let index = 0; index < favoriteList.length; index++) {
       const element = favoriteList[index];
@@ -132,12 +132,12 @@ function Home({route}) {
   function callApi() {
     if (isConnected) {
       filterIds();
+      setisWaiting(true);
       axios
         .get(
           'https://newsapi.org/v2/everything?domains=techcrunch.com,thenextweb.com&apiKey=c62e462725cb462c876fadd82adb455f',
         )
         .then(response => {
-          setisWaiting(false);
           if (response?.status === 200) {
             // setNewsList(response?.data?.articles);
             deleteAllDataFromTable();
@@ -148,23 +148,28 @@ function Home({route}) {
               response?.data?.articles.length,
             );
           } else {
-            Alert.alert(response?.statusText);
+            Toast.show(response?.statusText);
           }
-
+          setTimeout(() => {
+            setisWaiting(false);
+          }, 200);
           console.log('response', response);
         })
         .catch(error => {
+          setisWaiting(false);
+          Toast.show('Something went wrong');
           console.log('error', error);
         });
+    } else {
+      Toast.show('No Internet connection');
+      setisWaiting(false);
     }
   }
 
   return (
     <View style={styles.container}>
       <AppHeader title={route.name === 'Discover' ? 'Discover' : 'News App'} />
-      
       {route.name === 'Discover' ? <NewsSlider /> : null}
-      
       {NewsList.length > 0 ? (
         <ListHeader
           Label={'Recommended For You'}
@@ -182,7 +187,7 @@ function Home({route}) {
           }}
         />
       ) : null}
-{/* {!isWaiting ? (
+      {/* {!isWaiting ? (
         <ActivityIndicator color={'black'} style={{flex: 1 ,position:'absolute',alignSelf: 'center',alignContent: 'center'}} />
       ) : null} */}
       <MainListComponent
@@ -193,6 +198,7 @@ function Home({route}) {
         setfavoriteList={setfavoriteList}
         favoriteList={favoriteList}
         isWaiting={isWaiting}
+        callApi={callApi}
       />
     </View>
   );
