@@ -23,7 +23,6 @@ import {
 import NetworkContext from '../../common/commonFunctions/NetworkContext';
 import MainListComponent from '../../common/Components/MainListComponent';
 import NewsSlider from '../../common/NewsSlider';
-import NodataFoundComponent from '../../common/Components/NoDataFound';
 
 if (Platform.OS === 'android') {
   if (UIManager.setLayoutAnimationEnabledExperimental) {
@@ -68,15 +67,6 @@ function Home({route}) {
 
   useEffect(() => {
     DataCheck();
-    getAllDataFromTable()
-      .then(data => {
-        console.log('Retrieved data:', data?.length);
-        // Do something with the retrieved data
-      })
-      .catch(error => {
-        console.log('Error retrieving data:', error);
-        // Handle the error
-      });
   }, [isConnected]);
 
   useEffect(() => {

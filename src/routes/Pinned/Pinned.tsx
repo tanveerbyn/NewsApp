@@ -45,6 +45,7 @@ function Pinned() {
         }}
       />
       <MainListComponent
+        fromPinned={true}
         NewsList={NewsList}
         setNewsList={setNewsList}
         previousRecordIds={previousRecordIds}

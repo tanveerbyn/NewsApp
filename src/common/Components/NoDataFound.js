@@ -3,15 +3,17 @@ import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import AppFonts from '../../assets/fonts/AppFonts';
 import {windowWidth} from '../commonFunctions/commonFunctions';
 
-export default function NodataFoundComponent({retry}) {
+export default function NodataFoundComponent({retry, fromPinned}) {
   return (
     <View style={styles.waitIndicator}>
       <Text style={styles.NodataFound}>No Data Found</Text>
-      <TouchableOpacity onPress={retry}>
-        <Text style={[styles.NodataFound, {textDecorationLine: 'underline'}]}>
-          Retry
-        </Text>
-      </TouchableOpacity>
+      {!fromPinned ? (
+        <TouchableOpacity onPress={retry}>
+          <Text style={[styles.NodataFound, {textDecorationLine: 'underline'}]}>
+            Retry
+          </Text>
+        </TouchableOpacity>
+      ) : null}
     </View>
   );
 }
@@ -23,6 +25,7 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     justifyContent: 'center',
     alignItems: 'center',
+    marginTop: 100,
   },
   NodataFound: {
     fontFamily: AppFonts.PoppinsRegularFont,

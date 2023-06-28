@@ -193,7 +193,7 @@ export const removeFavorite = itemId => {
       'UPDATE NewsData SET isFavorite = 0, favoriteTimestamp = NULL WHERE id = ?;',
       [itemId],
       (_, result) => {
-        Toast.show('Removed from Favorite.');
+       
         console.log('Item removed from favorites');
       },
       (_, error) => {

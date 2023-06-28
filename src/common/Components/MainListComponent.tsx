@@ -1,6 +1,6 @@
 /* eslint-disable react/no-unstable-nested-components */
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, {useCallback} from 'react';
+import React, {useCallback, useContext} from 'react';
 import {
   FlatList,
   LayoutAnimation,
@@ -25,6 +25,7 @@ import {
 import Toast from 'react-native-simple-toast';
 import {ActivityIndicator} from 'react-native';
 import NodataFoundComponent from './NoDataFound';
+import NetworkContext from '../commonFunctions/NetworkContext';
 if (Platform.OS === 'android') {
   if (UIManager.setLayoutAnimationEnabledExperimental) {
     UIManager.setLayoutAnimationEnabledExperimental(true);
@@ -39,6 +40,7 @@ function MainListComponent({
   favoriteList,
   isWaiting,
   callApi,
+  fromPinned,
 }: any) {
   const PinPost = (rowData: NewsListItemObj) => {
     // alert(1);
@@ -58,6 +60,28 @@ function MainListComponent({
       previousRecordIds,
       setpreviousRecordIds,
     );
+  };
+  const RemovePost = (rowData: NewsListItemObj) => {
+    removeFavorite(rowData.item.id);
+    const List = removeFromArray(NewsList, rowData.item.id);
+    // const ListUnique = removeFromArrayUnique(
+    //   previousRecordIds,
+    //   rowData.item.id,
+    // );
+    // // setNewsList(List);
+    // setpreviousRecordIds(ListUnique);
+    console.log('ListX', List);
+    LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+
+    getFavorite(
+      (data: Array<NewsObj>) => {
+        setfavoriteList(data);
+        setNewsList([...data, ...List.slice(data.length + 1)]);
+      },
+      previousRecordIds,
+      setpreviousRecordIds,
+    );
+    Toast.show('Post deleted successfully');
   };
   const DeletePinPost = (rowData: NewsListItemObj) => {
     removeFavorite(rowData.item.id);
@@ -79,18 +103,21 @@ function MainListComponent({
       previousRecordIds,
       setpreviousRecordIds,
     );
+    Toast.show('Removed from Favorite.');
   };
 
   const renderItem = useCallback(
     (rowData: NewsListItemObj) => (
       <NewsListItem
         {...rowData}
+        RemovePost={() => RemovePost(rowData)}
         PinPost={() => PinPost(rowData)}
         DeletePinPost={() => DeletePinPost(rowData)}
       />
     ),
     [NewsList, favoriteList],
   );
+  const isConnected = useContext(NetworkContext);
   const keyExtractor = useCallback((item: NewsObj) => item.id + '_', []);
   return (
     <View style={{flex: 1}}>
@@ -107,6 +134,7 @@ function MainListComponent({
               <View style={styles.emptyView}>
                 {!isWaiting && NewsList.length === 0 && (
                   <NodataFoundComponent
+                    fromPinned={fromPinned}
                     retry={() => {
                       callApi();
                     }}
@@ -114,7 +142,7 @@ function MainListComponent({
                 )}
               </View>
             ) : null}
-            {isWaiting ? (
+            {isWaiting && isConnected ? (
               <View style={styles.emptyView}>
                 <ActivityIndicator color={'black'} />
               </View>
@@ -127,8 +155,7 @@ function MainListComponent({
 }
 const styles = StyleSheet.create({
   emptyView: {
-    height: windowHeight / 1.3,
-    width: windowWidth,
+    flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
   },

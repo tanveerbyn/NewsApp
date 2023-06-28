@@ -3,6 +3,7 @@ export type NewsListItemObj = {
   index: number;
   PinPost: any;
   DeletePinPost: any;
+  RemovePost: any;
 };
 export type NewsObj = {
   id: number;

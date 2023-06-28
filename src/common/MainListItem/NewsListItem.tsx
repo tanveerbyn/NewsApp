@@ -1,6 +1,12 @@
 /* eslint-disable react-native/no-inline-styles */
-import React, {useRef} from 'react';
-import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import React, {useRef, useState} from 'react';
+import {
+  ActivityIndicator,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import AppFonts from '../../assets/fonts/AppFonts';
 import {
   FormatDateToLocale,
@@ -10,13 +16,29 @@ import FastImage from 'react-native-fast-image';
 import {NewsListItemObj} from './ListItemInterface';
 import {Swipeable} from 'react-native-gesture-handler';
 
-function NewsListItem({item, PinPost, DeletePinPost}: NewsListItemObj) {
+function NewsListItem({
+  item,
+  PinPost,
+  DeletePinPost,
+  RemovePost,
+}: NewsListItemObj) {
   const swipeableRef = useRef(null);
 
   const handleCloseSwipeable = () => {
     if (swipeableRef.current) {
       swipeableRef.current.close();
     }
+  };
+
+  const [loading, setLoading] = useState(false);
+  const imageUrl = item?.urlToImage;
+
+  const handleLoadStart = () => {
+    setLoading(true);
+  };
+
+  const handleLoadEnd = () => {
+    setLoading(false);
   };
   return (
     <Swipeable
@@ -31,7 +53,7 @@ function NewsListItem({item, PinPost, DeletePinPost}: NewsListItemObj) {
                 handleCloseSwipeable();
               }}>
               <FastImage
-                source={require('../../assets/images/delete.png')}
+                source={require('../../assets/images/unpin.png')}
                 style={styles.swipeImage}
                 resizeMode="contain"
               />
@@ -49,6 +71,17 @@ function NewsListItem({item, PinPost, DeletePinPost}: NewsListItemObj) {
               />
             </TouchableOpacity>
           )}
+          <TouchableOpacity
+            onPress={() => {
+              RemovePost();
+              handleCloseSwipeable();
+            }}>
+            <FastImage
+              source={require('../../assets/images/delete.png')}
+              style={styles.swipeImage}
+              resizeMode="contain"
+            />
+          </TouchableOpacity>
         </View>
       )}>
       <View
@@ -59,11 +92,28 @@ function NewsListItem({item, PinPost, DeletePinPost}: NewsListItemObj) {
             elevation: item.isFavorite ? 5 : 0,
           },
         ]}>
-        <FastImage
-          source={{uri: item?.urlToImage, priority: FastImage.priority.high}}
-          style={styles.newsImg}
-          resizeMode="cover"
-        />
+        <View style={{justifyContent: 'center', alignItems: 'center'}}>
+          <FastImage
+            // source={{uri: item?.urlToImage, priority: FastImage.priority.high}}
+            style={styles.newsImg}
+            resizeMode="cover"
+            source={{
+              uri: imageUrl,
+              priority: FastImage.priority.normal,
+            }}
+            // style={{width: 200, height: 200}}
+            onLoadStart={handleLoadStart}
+            onLoadEnd={handleLoadEnd}
+          />
+          {loading && (
+            <ActivityIndicator
+              style={{position: 'absolute'}}
+              color={'black'}
+              size='small'
+            />
+          )}
+        </View>
+
         <View style={styles.Container2}>
           <View style={{flex: 1}}>
             <Text style={styles.nameStyle}>• {item?.name}</Text>
