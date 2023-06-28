@@ -14,7 +14,6 @@ export function FormatDateToLocale(DateString: string) {
   return dateToLocale;
 }
 
-
 export function removeFromArray(array: Array<NewsObj>, SelectedID: number) {
   // alert(SelectedID)
   const updatedArray = array.filter((item: NewsObj) => item.id !== SelectedID);

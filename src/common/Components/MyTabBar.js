@@ -1,5 +1,5 @@
 import React from 'react';
-import {View, Text, TouchableOpacity} from 'react-native';
+import {View, Text, TouchableOpacity, StyleSheet} from 'react-native';
 import FastImage from 'react-native-fast-image';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import Home from '../../routes/Homescreen/Home';
@@ -68,18 +68,10 @@ function MyTabBar({state, descriptors, navigation}) {
             onPress={onPress}
             key={index}
             onLongPress={onLongPress}
-            style={{
-              flex: 1,
-              justifyContent: 'center',
-              alignItems: 'center',
-              padding: 5,
-              backgroundColor: 'white',
-              borderTopWidth: 1,
-              borderColor: 'lightgray',
-            }}>
+            style={styles.touchContainer}>
             <FastImage
               source={icon}
-              style={{height: 18, width: 18, margin: 5}}
+              style={styles.img}
               resizeMode="contain"
               tintColor={isFocused ? 'black' : 'gray'}
             />
@@ -118,4 +110,16 @@ const TabNavigation = () => {
     </Tab.Navigator>
   );
 };
+const styles = StyleSheet.create({
+  touchContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 5,
+    backgroundColor: 'white',
+    borderTopWidth: 1,
+    borderColor: 'lightgray',
+  },
+  img: {height: 18, width: 18, margin: 5},
+});
 export default TabNavigation;
