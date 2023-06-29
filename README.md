@@ -1,6 +1,4 @@
 # NewsApp
-Install and setup the backend server
-https://github.com/Codebrahma/RestaurantApp-Express
 
 Installation
 run npm install or yarn install
